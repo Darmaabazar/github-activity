@@ -1,0 +1,46 @@
+#!C:/Users/bazar/AppData/Local/Programs/Python/Python312/python.exe
+
+import sys
+import requests
+import json
+
+def show_help():
+    print("Welcome to github-activity-cli! Here's how to use the tool:")
+    print("Usage: github-activity <command>")
+    print("Commands:")
+    print("  --help                       Show this help message")
+    print("  <username>                   Fetch the user’s activity")
+
+def fetch_user_api(username):
+    response = requests.get(f'https://api.github.com/users/{username}/events')
+    if response.status_code == 200:
+        print("Output:")
+        for i in response.json():
+            if i["type"] =="CreateEvent":
+                print(f" - Starred {i["repo"]["name"]}")
+            elif i["type"] =="PushEvent":
+                print(f" - Pushed {len(i["payload"]["commits"])} commits to {i["repo"]["name"]}")
+            elif i["type"] =="WatchEvent":
+                print(f" - Watched {i["repo"]["name"]}")
+            elif i["type"] =="DeleteEvent":
+                print(f" - Deleted {i["repo"]["name"]}")
+            elif i["type"] =="IssueCommentEvent":
+                print(f" - Write a new issue comment in {i["repo"]["name"]}")
+            elif i["type"] =="IssuesEvent":
+                print(f" - Opened new issues in {i["repo"]["name"]}")
+            elif i["type"] =="PullRequestEvent":
+                print(f" - PullRequest {i["repo"]["name"]}")
+            else:
+                print(i["type"])
+    elif response.status_code == 400:
+        print("Error")
+
+def main():
+    if sys.argv[1] == '--help':
+        show_help()
+    else:
+        username = sys.argv[1]
+        fetch_user_api(username)
+
+if __name__ == '__main__':
+    main()
